@@ -1,5 +1,5 @@
 #Create logs
-$LogPath = "C:\ProgramData\Intune.ScriptLogs\PSRename"
+$LogPath = "$($env:ProgramData)\Intune.ScriptLogs\PSRename"
 if(!(Test-Path -Path $LogPath)) { New-Item -Path $LogPath -ItemType Directory -Force }
 
 $LogPathTranscript = Join-Path -Path $LogPath -ChildPath Transcript.txt
