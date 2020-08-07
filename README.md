@@ -2,6 +2,13 @@
 Scripts to rename workstation they are prepared by Intune Autopilot in Hybrid Azure AD Join. App renaming device based on Device Name from Windows Autopilot devices list.
 Devices – Enroll devices – Devices - select device - Device Name field
 
+Many thanks to MICHAEL NIEHAUS. 
+Solution was based on:
+https://oofhours.com/2020/05/19/renaming-autopilot-deployed-hybrid-azure-ad-join-devices/
+
+# Prepare Active Directory
+Delegate access to SELF for "Read All Properties" and "Write All Properties" to OU with autopilot devices
+
 # Create an app
 .\IntuneWinAppUtil.exe -c ..\App -s install.cmd -o ..\IntuneApps
 
