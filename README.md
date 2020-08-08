@@ -22,7 +22,14 @@ Additional requirement detects if new device name exist in profile settings, dev
 
 Additional requirement rules:	Script PSRenameReq.ps1
 
+Select output data type:  Boolean;
+Operator:                 Equals;
+Value:                    Yes ($true)
+
 # Detection rules
 Detection rules check if current name is different from new.
 
-Detection rules:	PSRenameDetector.ps1
+Detection rules:	        PSRenameDetector.ps1
+
+# Assignments
+Required but not in autopilot proces. It must be xxcluded from ESP - we dont want to reboot device in autopilot process.
