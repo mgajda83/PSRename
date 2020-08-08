@@ -32,4 +32,4 @@ Detection rules check if current name is different from new.
 Detection rules:	        PSRenameDetector.ps1
 
 # Assignments
-Required but not in autopilot proces. It must be xxcluded from ESP - we dont want to reboot device in autopilot process.
+Required but not in autopilot proces. It must be excluded from ESP - we dont want to reboot device in autopilot process.
