@@ -33,3 +33,5 @@ Detection rules:	        PSRenameDetector.ps1
 
 # Assignments
 Required but not in autopilot proces. It must be excluded from ESP - we dont want to reboot device in autopilot process.
+
+App will start when autopilot ends and device connect to corporate network. If we dont have connection to corporate network, Intune try to start it later.
