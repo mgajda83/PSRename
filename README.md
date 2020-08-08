@@ -14,8 +14,10 @@ Delegate access to SELF for "Read All Properties" and "Write All Properties" to 
 
 Next add Windows app (Win32) and load install.intunewin file.
 
-Install command: install.cmd
-Uninstall command:	uninstall.cmd
+Install command:    install.cmd;
+Uninstall command:  uninstall.cmd;
+Install behavior:   System
+
 
 # Additional requirement
 Additional requirement detects if new device name exist in profile settings, device is part of domain and aktually device have connection to domain controller. If not, app is not applicable for now.
