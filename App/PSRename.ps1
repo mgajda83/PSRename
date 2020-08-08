@@ -10,28 +10,50 @@ if(Test-Path -Path C:\WINDOWS\ServiceState\wmansvc\AutopilotDDSZTDFile.json) {
     #Get Autopilot profile settings
     $Autopilot = Get-Content C:\WINDOWS\ServiceState\wmansvc\AutopilotDDSZTDFile.json -ErrorAction Stop | ConvertFrom-Json
 
+    #Check if device name exist in profile
     if([String]$Autopilot.CloudAssignedDeviceName -ne "") {
-        #Check if device name not exist in AD. If exist add sufix.
-		$i = 0
-		do {
-			$CloudAssignedDeviceName = $Autopilot.CloudAssignedDeviceName
-			if($i -gt 0)
-			{
-				$CloudAssignedDeviceName += "-$i"
-			}
-			
-			$ADSI = [ADSISearcher]"(&(objectclass=computer)(samaccountname=$CloudAssignedDeviceName$))"
-			$ADDevice = $ADSI.FindOne()
-			$i++
-		}
-		while($null -ne $ADDevice)
-		
-		#Rename computer if different
-        if($env:COMPUTERNAME -ne $CloudAssignedDeviceName) {
+        $doIt = $false
+
+        #Check if it first run
+        if(!(Test-Path -Path "$($env:ProgramData)\Intune.ScriptLogs\PSRename\DeviceName.tag")) {
+            #Check if current name is correct
+            if($env:COMPUTERNAME -ne $Autopilot.CloudAssignedDeviceName) {
+                $doIt = $true
+
+                #If it first run check device name not exist in AD. If exist add sufix.
+                $i = 0
+                do {
+                    $CloudAssignedDeviceName = $Autopilot.CloudAssignedDeviceName
+                    if($i -gt 0)
+                    {
+                        $CloudAssignedDeviceName += "-$i"
+                    }
+                    
+                    $ADSI = [ADSISearcher]"(&(objectclass=computer)(samaccountname=$CloudAssignedDeviceName$))"
+                    $ADDevice = $ADSI.FindOne()
+                    $i++
+                }
+                while($null -ne $ADDevice)
+            }
+        } else {
+            #Get first run device name
+            $CloudAssignedDeviceName = Get-Content -Path "$($env:ProgramData)\Intune.ScriptLogs\PSRename\DeviceName.tag"
+
+            #Check if current name is different then first run name
+            if($Env:COMPUTERNAME -ne $CloudAssignedDeviceName)
+            {
+                $doIt = $true
+            }
+        }
+
+        #If must rename then do it
+        if($doIt)
+        {
             Write-Host "Workstation: $($env:COMPUTERNAME) => $CloudAssignedDeviceName"
             try {
                 Rename-Computer -NewName $CloudAssignedDeviceName -ErrorAction Stop
-                
+                Set-Content "$($env:ProgramData)\Intune.ScriptLogs\PSRename\DeviceNane.tag" -Value $CloudAssignedDeviceName
+
                 & shutdown.exe /g /t 600 /f /c "Restarting the computer due to a computer name change.  Save your work."
             }
             catch {
