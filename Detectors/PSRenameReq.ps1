@@ -1,12 +1,12 @@
 #Check if autopilot config file exist on workstation
 $goodToGo = $true
 if(Test-Path -Path C:\WINDOWS\ServiceState\wmansvc\AutopilotDDSZTDFile.json) {
-    #Get Autopilot profile settings
+	#Get Autopilot profile settings
     $Autopilot = Get-Content C:\WINDOWS\ServiceState\wmansvc\AutopilotDDSZTDFile.json | ConvertFrom-Json
         
     #Check device name exist
     if($null -eq $Autopilot.CloudAssignedDeviceName) {
-        Write-Host "No device name"
+		Write-Host "No device name"
         $goodToGo = $false
     }
 }
