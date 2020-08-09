@@ -5,7 +5,7 @@ if(Test-Path -Path C:\WINDOWS\ServiceState\wmansvc\AutopilotDDSZTDFile.json) {
     $Autopilot = Get-Content C:\WINDOWS\ServiceState\wmansvc\AutopilotDDSZTDFile.json | ConvertFrom-Json
         
     #Check device name exist
-    if($null -ne $Autopilot.CloudAssignedDeviceName) {
+    if($null -eq $Autopilot.CloudAssignedDeviceName) {
         Write-Host "No device name"
         $goodToGo = $false
     }
