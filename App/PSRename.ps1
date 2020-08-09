@@ -1,3 +1,10 @@
+[CmdletBinding()]
+param (
+    [Parameter()]
+    [Switch]
+    $Strict
+)
+
 #Create logs
 $LogPath = "$($env:ProgramData)\Intune.ScriptLogs\PSRename"
 if(!(Test-Path -Path $LogPath)) { New-Item -Path $LogPath -ItemType Directory -Force }
@@ -10,7 +17,7 @@ if(Test-Path -Path C:\WINDOWS\ServiceState\wmansvc\AutopilotDDSZTDFile.json) {
     #Get Autopilot profile settings
     $Autopilot = Get-Content C:\WINDOWS\ServiceState\wmansvc\AutopilotDDSZTDFile.json -ErrorAction Stop | ConvertFrom-Json
 
-    #Check if device name exist in profile
+	#Check if device name exist in profile
     if([String]$Autopilot.CloudAssignedDeviceName -ne "") {
         $doIt = $false
 
@@ -20,21 +27,26 @@ if(Test-Path -Path C:\WINDOWS\ServiceState\wmansvc\AutopilotDDSZTDFile.json) {
             if($env:COMPUTERNAME -ne $Autopilot.CloudAssignedDeviceName) {
                 $doIt = $true
 
-                #If it first run check device name not exist in AD. If exist add sufix.
-                $i = 0
-                do {
+                #Strict mode will use exact device name from profile. If device name will exist in AD, it return error.
+                if($Strict) {
                     $CloudAssignedDeviceName = $Autopilot.CloudAssignedDeviceName
-                    if($i -gt 0)
-                    {
-                        $CloudAssignedDeviceName += "-$i"
+                } else {
+                    #If it first run check device name not exist in AD. If exist add sufix.
+                    $i = 0
+                    do {
+                        $CloudAssignedDeviceName = $Autopilot.CloudAssignedDeviceName
+                        if($i -gt 0)
+                        {
+                            $CloudAssignedDeviceName += "-$i"
+                        }
+                        
+                        $ADSI = [ADSISearcher]"(&(objectclass=computer)(samaccountname=$CloudAssignedDeviceName$))"
+                        $ADDevice = $ADSI.FindOne()
+                        $i++
                     }
-                    
-                    $ADSI = [ADSISearcher]"(&(objectclass=computer)(samaccountname=$CloudAssignedDeviceName$))"
-                    $ADDevice = $ADSI.FindOne()
-                    $i++
+                    while($null -ne $ADDevice)
                 }
-                while($null -ne $ADDevice)
-            }
+            } 
         } else {
             #Get first run device name
             $CloudAssignedDeviceName = Get-Content -Path "$($env:ProgramData)\Intune.ScriptLogs\PSRename\DeviceName.tag"
