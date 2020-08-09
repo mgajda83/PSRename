@@ -1,1 +1,1 @@
-powershell.exe -executionpolicy bypass -command "& '.\PSRename.ps1'
+powershell.exe -executionpolicy bypass -command "& '.\PSRename.ps1' -Strict"
